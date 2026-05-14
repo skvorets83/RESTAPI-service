@@ -27,13 +27,13 @@ uvicorn main:app --reload
 
 # ОПИСАНИЕ СХЕМЫ БД
 Таблица pyfiles
-Колонка      |    Тип       | Описание 
-name_file    |    INT       | Имя файла
+Колонка      |    Тип       | Описание \n
+name_file    |    INTEGER   | Имя файла
 type_element |    TEXT      | function,class, method
 name_element |    TEXT      | имя элемента(function,class,method)
 parrent_class|    TEXT      | Родительский класс(для методов)
-str_begin    |    INT       | Номер строки начала
-str_end      |    INT       | Номер строки конца
+str_begin    |    INTEGER   | Номер строки начала
+str_end      |    INTEGER   | Номер строки конца
 docstring    |    TEXT      | Документация
 
 
