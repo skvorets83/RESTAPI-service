@@ -8,7 +8,7 @@
 Решение: Автоматическая индексация с возможностью поиска.
 
 
- '''bash
+''''bash
 pip install -r requirements.txt
 '''
 
