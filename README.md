@@ -140,6 +140,42 @@ curl http:127.0.0.1:8000/api/search?keyword=converter
   }
 ]
 ```
+Опционално можно добавить фильтр по функциям,классам, методам.
+
+Запрос:
+```bash
+curl http:127.0.0.1:8000/api/files/search?keyword=converter&type=class
+```
+
+Ответ: 
+```json
+[
+  {
+    "file name ": "converters.py",
+    "type element ": "class",
+    "name element ": "Converters0",
+    "docstring ": "Calculates the system configuration for the core application logic."
+  },
+  {
+    "file name ": "converters.py",
+    "type element ": "class",
+    "name element ": "Converters1",
+    "docstring ": "Represents the authentication logic for the core application logic."
+  },
+  {
+    "file name ": "converters.py",
+    "type element ": "class",
+    "name element ": "Converters2",
+    "docstring ": "Validates the payment transaction for the core application logic."
+  },
+  {
+    "file name ": "converters.py",
+    "type element ": "class",
+    "name element ": "Converters3",
+    "docstring ": "Handles the user data for the core application logic."
+  }
+]
+```
 4. GET /api/stats - получение статистики обработанных файлов
 
 Запрос: 
