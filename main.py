@@ -1,6 +1,12 @@
 from fastapi import FastAPI
 import sqlite3
+from typing import Optional
 app= FastAPI()
+
+def database_exists(cursor,name:str):
+        
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?",(name,))
+        return cursor.fetchone() is not None
 
 def get_connection_database():
     connection = sqlite3.connect("database.db")
@@ -11,9 +17,14 @@ def get_connection_database():
 
 @app.get("/api/files")
 def list_files():
+
     result=[]
     connection = get_connection_database()
     cursor = connection.cursor()
+    if not database_exists(cursor,'pyfiles'):
+        connection.close()
+        return []
+    
     cursor.execute("SELECT DISTINCT name_file FROM pyfiles")
     files=cursor.fetchall()
     for name_file in files:
@@ -37,6 +48,9 @@ def list_files():
 def get_info():
    connection = get_connection_database()
    cursor = connection.cursor()
+   if not database_exists(cursor,"pyfiles"):
+       connection.close()
+       return [] 
 
    cursor.execute('SELECT COUNT(DISTINCT name_file) FROM pyfiles')
    total_files = cursor.fetchone()[0]
@@ -57,6 +71,10 @@ def get_info():
 def get_structure(name :str):
     connection =get_connection_database()
     cursor =connection.cursor()
+
+    if not database_exists(cursor,"pyfiles"):
+        connection.close()
+        return []
 
     functions =[]  
     cursor.execute("SELECT name_file,name_element, str_begin, str_end, docstring FROM pyfiles WHERE name_file = ? AND type_element='function'",(name,))
@@ -104,11 +122,25 @@ def get_structure(name :str):
 
 @app.get("/api/search")
 
-def search_functions_and_classes(keyword:str):
+def search_functions_and_classes(keyword:str, type: Optional[str]=None):
     connection = get_connection_database()
     cursor=connection.cursor()
+    if not database_exists(cursor,'pyfiles'):
+        connection.close()
+        return []
+
     search_word = keyword.lower()
-    cursor.execute("SELECT  DISTINCT name_file,type_element,name_element,docstring FROM pyfiles WHERE LOWER(name_element) LIKE ? OR LOWER(docstring) LIKE ?",(f"%{search_word}%", f"%{search_word}%"))
+    print(f"Get request: {keyword}, {type}")
+    parameters = [f"%{search_word}%", f"%{search_word}%"]
+    request= "SELECT DISTINCT name_file,type_element, name_element,docstring FROM pyfiles WHERE (LOWER(name_element) LIKE ? OR LOWER(docstring) LIKE ?) "
+    if type!=None:
+        request+= "AND type_element= ?"
+        parameters.append(type)
+    print(f"sql {request}")
+    print(f"param {parameters}")
+
+
+    cursor.execute(request,parameters)
     items=cursor.fetchall()
     all_results=[]
     for item in items:
